@@ -4,11 +4,11 @@ project(CameraPoseEstimator)
 # Create Main project
 set(SOURCES
     main.cpp
-    camera_calibrator.cpp
+#    camera_calibrator.cpp
 )
 
 set(HEADERS
-    camera_calibrator.h
+#    camera_calibrator.h
 )
 
 add_executable(CameraPoseEstimator
