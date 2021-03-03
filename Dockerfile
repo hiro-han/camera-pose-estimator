@@ -14,11 +14,15 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
   apt-get install -y --no-install-recommends \
     wget git cmake unzip ca-certificates \
-    build-essential \
+    build-essential gcc-8 g++-8 libboost-dev \
     libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libavresample-dev libswscale-dev \
     libjpeg-dev libpng-dev ffmpeg libv4l-dev libtbb-dev libopenblas-dev \
   && rm -rf /var/lib/apt/lists/*
 
+RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 8 && \
+  update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 8 && \
+  update-alternatives --config gcc && \
+  update-alternatives --config g++
 
 
 # apt update

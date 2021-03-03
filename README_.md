@@ -49,3 +49,7 @@ terminate called after throwing an instance of 'cv::Exception'
 
 - host pc
 xhost local:
+
+
+
+./CameraPoseEstimator -m c -v ../test/data/checker-video.mp4 -o ../result -oi 1

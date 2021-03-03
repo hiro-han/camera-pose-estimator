@@ -6,9 +6,9 @@ project(${PROJECT})
 
 
 # Setting
-SET(PROJECT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
-SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_DIR}/bin)
-
+set(PROJECT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+set(EXECUTABLE_OUTPUT_PATH ${PROJECT_DIR}/bin)
+#target_compile_features(${PROJECT} INTERFACE cxx_std_17)
 
 # Sources
 file(
@@ -20,15 +20,23 @@ file(
 
 # Libraries
 find_package(OpenCV REQUIRED)
+find_package(Boost REQUIRED)
+
+#add_subdirectory(${PROJECT_DIR}/3rdlibs/argparse)
 
 
 # Main
 file(GLOB_RECURSE MAIN ${PROJECT_DIR}/src/main.cpp)
 add_executable(${PROJECT} ${MAIN} ${SOURCES})
+
 target_include_directories(${PROJECT} PUBLIC ${PROJECT_DIR}/src)
 target_include_directories(${PROJECT} PUBLIC ${OpenCV_INCLUDE_DIRS})
 target_link_libraries(${PROJECT} ${OpenCV_LIBS})
-target_link_libraries(${PROJECT} INTERFACE ${PROJECT_DIR}/3rdlibs/argparse/include)
+target_include_directories(${PROJECT} PUBLIC ${Boost_INCLUDE_DIRS})
+target_link_libraries(${PROJECT} ${Boost_LIBRARIES})
+target_include_directories(${PROJECT} PUBLIC ${PROJECT_DIR}/3rdlibs/argparse/include)
+
+set_property(TARGET ${PROJECT} PROPERTY CXX_STANDARD 17)
 
 
 # Test

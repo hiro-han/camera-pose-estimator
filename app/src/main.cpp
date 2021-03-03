@@ -1,3 +1,5 @@
+#include <argparse/argparse.hpp>
+#include <boost/lexical_cast.hpp>
 #include <iostream>
 #include <opencv2/opencv.hpp>
 
@@ -34,12 +36,44 @@ bool calibration(cv::VideoCapture& capture, const std::string& output_dir, const
   return true;
 }
 
+bool parse(argparse::ArgumentParser& parser, int argc, char* argv[]) {
+  parser.add_argument("-m", "--mode").required().help("Mode  c : Camera Calibration, p : Camera Pose Estimation.");
+  parser.add_argument("-v", "--video").required().help("Input video.");
+  parser.add_argument("-o", "--output").required().help("Output directory.");
+  parser.add_argument("-c", "--config").default_value(std::string("config.json")).help("Config file.");
+  parser.add_argument("-oi", "--output-image")
+      .default_value(false)
+      .help("Output frame image.")
+      .action([](const std::string& value) { return boost::lexical_cast<bool>(value); });
+
+  try {
+    parser.parse_args(argc, argv);
+  } catch (const std::runtime_error& err) {
+    std::cout << err.what() << std::endl;
+    std::cout << parser;
+    return false;
+  }
+  return true;
+}
+
 int main(int argc, char* argv[]) {
-  std::string output_dir = "../result";
-  std::string video;
-  video = "/dev/video0";
-  video = "../test/data/checker-video.mp4";
-  bool output_image = true;
+  argparse::ArgumentParser parser("Camera Pose Estimator");
+  if (!parse(parser, argc, argv)) {
+    return -1;
+  }
+
+  // std::string output_dir = "../result";
+  // std::string video;
+  // video = "/dev/video0";
+  // video = "../test/data/checker-video.mp4";
+  // bool output_image = true;
+
+  std::string output_dir = parser.get<std::string>("--output");
+  std::string video = parser.get<std::string>("--video");
+  bool output_image = parser.get<bool>("--output-image");
+  // video = "/dev/video0";
+  // video = "../test/data/checker-video.mp4";
+  // bool output_image = true;
 
   cv::VideoCapture capture;
 
@@ -47,16 +81,16 @@ int main(int argc, char* argv[]) {
     capture.open(video);
   } catch (cv::Exception& e) {
     std::cout << e.what() << std::endl;
-    return -1;
+    return -2;
   }
 
   if (!capture.isOpened()) {
     std::cout << "Error. capture.isOpened()" << std::endl;
-    return -1;
+    return -2;
   }
 
   if (!calibration(capture, output_dir, output_image)) {
-    return -2;
+    return -3;
   }
 
   return 0;
