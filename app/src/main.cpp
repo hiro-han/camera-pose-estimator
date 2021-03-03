@@ -1,69 +1,50 @@
 #include <iostream>
 #include <opencv2/opencv.hpp>
 
-// #include "camera_calibrator.h"
+#include "camera_calibrator.h"
 
-// bool calibration(cv::VideoCapture &capture, const std::string &output_dir) {
-//   cv::Mat frame;
-//   const std::string window_name = "Calibration";
-//   cv::namedWindow(window_name, CV_WINDOW_AUTOSIZE);
-
-//   CameraCalibrator calibrator(true, output_dir);
-//   calibrator.initialize(30.0, 8, 6);
-//   int count = 0;
-
-//   while (capture.read(frame)) {
-//     bool detected = calibrator.detectChessboard(frame);
-//     cv::Mat detected_image = frame.clone();
-//     cv::drawChessboardCorners(detected_image, calibrator.getPattenSize(), calibrator.getCorners(), detected);
-//     cv::imshow(window_name, detected_image);
-
-//     const int key = cv::waitKey(1);
-//     if (key == 'q') {
-//       break;
-//     }
-//   }
-//   cv::destroyWindow(window_name);
-
-//   if (!calibrator.calibration()) {
-//     return false;
-//   }
-//   return true;
-// }
-
-bool outputVideo(cv::VideoCapture& capture, const std::string& output_dir) {
-  int fourcc = CV_FOURCC('M', 'P', '4', 'V');
-  double fps = capture.get(CV_CAP_PROP_FPS);  //動画からfpsを取得
-
-  int width = capture.get(CV_CAP_PROP_FRAME_WIDTH);    //動画から幅を取得
-  int height = capture.get(CV_CAP_PROP_FRAME_HEIGHT);  //動画から高さを取得
-
-  cv::VideoWriter output(output_dir + "/output.mp4", fourcc, fps, cv::Size(width, height), 0);  //出力用のオブジェクト
-
+bool calibration(cv::VideoCapture& capture, const std::string& output_dir, const bool output_image) {
   cv::Mat frame;
-  cv::namedWindow("test", CV_WINDOW_AUTOSIZE);
-  while (capture.read(frame)) {  //ループ
-    output << frame;             //フレームを書き込み
+  const std::string window_name = "Calibration";
+  cv::namedWindow(window_name, CV_WINDOW_AUTOSIZE);
 
-    int key = cv::waitKey(1);
+  CameraCalibrator calibrator(30.0, 8, 6, output_image, output_dir);
+  int count = 0;
+
+  while (capture.read(frame)) {
+    bool detected = calibrator.detectChessboard(frame);
+    cv::Mat detected_image = frame.clone();
+    if (detected) {
+      cv::drawChessboardCorners(detected_image, calibrator.getPattenSize(), calibrator.getCorners(), detected);
+    }
+    cv::imshow(window_name, detected_image);
+
+    const int key = cv::waitKey(1);
     if (key == 'q') {
-      capture.release();
-      break;  // whileループから抜ける
+      std::cout << "Finished detecting checker board." << std::endl;
+      break;
     }
   }
-  cv::destroyWindow("test");
+  cv::destroyWindow(window_name);
 
+  if (!calibrator.calibration()) {
+    std::cout << "Failed to camera calibration." << std::endl;
+    return false;
+  }
   return true;
 }
 
 int main(int argc, char* argv[]) {
-  std::string output_dir = "./result";
+  std::string output_dir = "../result";
+  std::string video;
+  video = "/dev/video0";
+  video = "../test/data/checker-video.mp4";
+  bool output_image = true;
+
   cv::VideoCapture capture;
 
   try {
-    // capture.open(0);
-    bool ret = capture.open("/dev/video0");
-    std::cout << ret << std::endl;
+    capture.open(video);
   } catch (cv::Exception& e) {
     std::cout << e.what() << std::endl;
     return -1;
@@ -74,8 +55,9 @@ int main(int argc, char* argv[]) {
     return -1;
   }
 
-  //  calibration(capture, output_dir);
-  outputVideo(capture, output_dir);
+  if (!calibration(capture, output_dir, output_image)) {
+    return -2;
+  }
 
-  return 1;
+  return 0;
 }

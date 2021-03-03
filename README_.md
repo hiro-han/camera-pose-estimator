@@ -12,7 +12,7 @@ opencv_contrib$ git checkout -b 3.4.13 refs/tags/3.4.13
 https://github.com/opencv/opencv/archive/3.4.13.zip
 
 sudo docker build -t camera-pose-estimator -f Dockerfile .
-sudo docker run --privileged -it -v $PWD:/app -v /tmp/.X11-unix/:/tmp/.X11-unix --device=/dev/video0:/dev/video0 -e DISPLAY=$DISPLAY camera-pose-estimator 
+sudo docker run --privileged -it -v $PWD:/app -v /tmp/.X11-unix/:/tmp/.X11-unix --device=/dev/video0:/dev/video0:mwr -e DISPLAY=$DISPLAY camera-pose-estimator 
 
 
 # opencv build
@@ -41,3 +41,11 @@ HIGHGUI ERROR: libv4l unable to ioctl VIDIOCSPICT
 https://stackoverflow.com/questions/24705101/opencv-videocapture-not-opening
 cmake .. -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_INSTALL_PREFIX=/usr/local -DWITH_GTK=ON -DWITH_FFMPEG=1 
 sudo apt-get install libav-tools libavcodec-dev libavformat-dev libavutil-dev libswscale-dev libx264-dev
+
+
+###############
+terminate called after throwing an instance of 'cv::Exception'
+  what():  OpenCV(3.4.13) /app/opencv/opencv-3.4.13/modules/highgui/src/window_gtk.cpp:624: error: (-2:Unspecified error) Can't initialize GTK backend in function 'cvInitSystem'
+
+- host pc
+xhost local:

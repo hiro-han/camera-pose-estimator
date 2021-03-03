@@ -6,17 +6,18 @@
 
 class CameraCalibrator {
  public:
-  CameraCalibrator(const bool output_image, const std::string output_dir);
+  CameraCalibrator(const float chess_square_size, const int pattern_row, const int patter_col, const bool output_image,
+                   const std::string output_dir);
   virtual ~CameraCalibrator();
 
-  bool initialize(const float chess_square_size, const int pattern_row, const int patter_col);
+  // bool initialize(const float chess_square_size, const int pattern_row, const int patter_col);
 
   bool detectChessboard(const cv::Mat& input_image);
 
   bool calibration(/* frame */);
 
   const cv::Size& getPattenSize() const { return pattern_size_; }
-  const std::vector<cv::Point2f>& getCorners() const { return img_points_[0]; }  // TBD
+  const std::vector<cv::Point2f>& getCorners() const { return img_points_.back(); }  // TBD
 
  private:
   bool output_image_;

@@ -3,32 +3,27 @@
 #include <opencv2/aruco.hpp>
 #include <opencv2/opencv.hpp>
 
-CameraCalibrator::CameraCalibrator(const bool output_image = false, const std::string output_dir = "")
+CameraCalibrator::CameraCalibrator(const float chess_square_size, const int pattern_row, const int patter_col,
+                                   const bool output_image = false, const std::string output_dir = "")
     : output_image_(output_image), count_(0), output_dir_(output_dir + "/calibration/") {
-  // nop
-}
-
-CameraCalibrator::~CameraCalibrator() {
-  // nop
-}
-
-bool CameraCalibrator::initialize(const float chess_square_size, const int pattern_row, const int patter_col) {
   pattern_size_ = cv::Size2i(patter_col, pattern_row);
-
   for (int i = 0; i < pattern_row; i++) {
     for (int j = 0; j < patter_col; j++) {
       cv::Point3f p(i * chess_square_size, j * chess_square_size, 0.0);
       object_.push_back(p);
     }
   }
+}
 
-  return true;
+CameraCalibrator::~CameraCalibrator() {
+  // nop
 }
 
 bool CameraCalibrator::detectChessboard(const cv::Mat &input_image) {
   std::vector<cv::Point2f> corners;
   bool found = cv::findChessboardCorners(input_image, pattern_size_, corners);
   if (found) {
+    image_size_ = input_image.size();
     obj_points_.push_back(object_);
 
     cv::Mat gray_image = cv::Mat(input_image.size(), CV_8UC1);
@@ -53,17 +48,28 @@ bool CameraCalibrator::calibration() {
   cv::Mat camera_matrix;              // カメラ内部パラメータ行列
   cv::Mat dist_coefs;                 // 歪み係数
   std::vector<cv::Mat> rvecs, tvecs;  // 各ビューの回転ベクトルと並進ベクトル
-  cv::calibrateCamera(obj_points_, img_points_, image_size_, camera_matrix, dist_coefs, rvecs, tvecs);
+  double rms = cv::calibrateCamera(obj_points_, img_points_, image_size_, camera_matrix, dist_coefs, rvecs, tvecs);
+  std::cout << rms << std::endl;
 
-  cv::FileStorage fs(output_dir_ + "camera.xml", cv::FileStorage::WRITE);
-  if (!fs.isOpened()) {
-    // cerr << "File can not be opened." << endl;
+  cv::FileStorage fs1(output_dir_ + "camera.xml", cv::FileStorage::WRITE);
+  if (!fs1.isOpened()) {
+    std::cout << "Failed to open file (camera.xml)." << std::endl;
     return false;
   }
 
-  fs << "intrinsic" << camera_matrix;
-  fs << "distortion" << dist_coefs;
-  fs.release();
+  fs1 << "intrinsic" << camera_matrix;
+  fs1 << "distortion" << dist_coefs;
+  fs1.release();
+
+  cv::FileStorage fs2(output_dir_ + "result.txt", cv::FileStorage::WRITE);
+  if (!fs2.isOpened()) {
+    std::cout << "Failed to open file (result.txt)." << std::endl;
+    return false;
+  }
+
+  fs2 << "RMS" << rms;
+  fs2 << "NumberOfFrame" << count_;
+  fs2.release();
 
   return true;
 }
