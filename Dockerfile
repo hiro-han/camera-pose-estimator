@@ -35,12 +35,16 @@ RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 8 && \
 # libv4l-dev \
 # libtbb-dev
 
+WORKDIR opencv
+RUN git clone https://github.com/opencv/opencv_contrib.git \
+  cd opencv_contrib && \
+  git checkout -b 3.4.13 refs/tags/3.4.13
 
-# RUN git clone https://github.com/opencv/opencv_contrib.git
-
-# COPY opencv/3.4.13.zip .
-# RUN unzip 3.4.13.zip && \
-#   cd opencv-3.4.13 && \
-#   cmake -DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules .
+RUN wget https://github.com/opencv/opencv/archive/3.4.13.zip && \
+  unzip 3.4.13.zip && \
+  cd opencv-3.4.13 && \
+  mkdir build && \
+  cmake -D WITH_V4L=OFF -DOPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules .. && \
+  make install
 
 WORKDIR /app

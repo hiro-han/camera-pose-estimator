@@ -62,18 +62,9 @@ int main(int argc, char* argv[]) {
     return -1;
   }
 
-  // std::string output_dir = "../result";
-  // std::string video;
-  // video = "/dev/video0";
-  // video = "../test/data/checker-video.mp4";
-  // bool output_image = true;
-
   std::string output_dir = parser.get<std::string>("--output");
   std::string video = parser.get<std::string>("--video");
   bool output_image = parser.get<bool>("--output-image");
-  // video = "/dev/video0";
-  // video = "../test/data/checker-video.mp4";
-  // bool output_image = true;
 
   cv::VideoCapture capture;
 
