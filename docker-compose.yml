@@ -1,0 +1,14 @@
+version: "3"
+services:
+  camera-pose-estimator:
+    container_name: camera-pose-estimator
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - $PWD:/app
+      - /tmp/.X11-unix/:/tmp/.X11-unix
+    environment:
+      - DISPLAY=$DISPLAY
+    # devices:
+    #   - /dev/video0:/dev/video0:mwr

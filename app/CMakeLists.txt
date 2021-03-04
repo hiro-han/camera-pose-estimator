@@ -38,6 +38,15 @@ target_include_directories(${PROJECT} PUBLIC ${PROJECT_DIR}/3rdlibs/argparse/inc
 
 set_property(TARGET ${PROJECT} PROPERTY CXX_STANDARD 17)
 
+# Tool
+add_executable(marker_generator ${PROJECT_DIR}/tool/marker_generator.cpp)
+target_include_directories(marker_generator PUBLIC ${PROJECT_DIR}/src)
+target_include_directories(marker_generator PUBLIC ${OpenCV_INCLUDE_DIRS})
+target_link_libraries(marker_generator ${OpenCV_LIBS})
+target_include_directories(marker_generator PUBLIC ${PROJECT_DIR}/3rdlibs/argparse/include)
+
+set_property(TARGET marker_generator PROPERTY CXX_STANDARD 17)
+message("${OpenCV_INCLUDE_DIRS}")
 
 # Test
 #file(
