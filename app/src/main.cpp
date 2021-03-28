@@ -4,6 +4,7 @@
 #include <opencv2/opencv.hpp>
 
 #include "camera_calibrator.h"
+#include "camera_pose_estimator.h"
 
 bool calibration(cv::VideoCapture& capture, const std::string& output_dir, const bool output_image) {
   cv::Mat frame;
@@ -36,6 +37,34 @@ bool calibration(cv::VideoCapture& capture, const std::string& output_dir, const
   return true;
 }
 
+bool estimation(cv::VideoCapture& capture, const std::string& output_dir, const bool output_image) {
+  cv::Mat frame;
+  const std::string window_name = "PoseEstimation";
+  cv::namedWindow(window_name, CV_WINDOW_AUTOSIZE);
+
+  CameraPoseEstimator estimator(200, 120, output_image, output_dir);
+  if (!estimator.loadCameraParameterFile(output_dir + "/calibration/camera.xml")) {
+    return false;
+  }
+  int count = 0;
+
+  while (capture.read(frame)) {
+    bool estimation = estimator.estimate(frame, MarkerType::ArucoDiamond);
+    if (estimation) {
+      cv::imshow(window_name, estimator.getDetectedImage());
+    }
+
+    const int key = cv::waitKey(1);
+    if (key == 'q') {
+      std::cout << "Finished pose estimation." << std::endl;
+      break;
+    }
+  }
+  cv::destroyWindow(window_name);
+
+  return true;
+}
+
 bool parse(argparse::ArgumentParser& parser, int argc, char* argv[]) {
   parser.add_argument("-m", "--mode").required().help("Mode  c : Camera Calibration, p : Camera Pose Estimation.");
   parser.add_argument("-v", "--video").required().help("Input video.");
@@ -62,6 +91,7 @@ int main(int argc, char* argv[]) {
     return -1;
   }
 
+  std::string mode = parser.get<std::string>("--mode");
   std::string output_dir = parser.get<std::string>("--output");
   std::string video = parser.get<std::string>("--video");
   bool output_image = parser.get<bool>("--output-image");
@@ -80,8 +110,14 @@ int main(int argc, char* argv[]) {
     return -2;
   }
 
-  if (!calibration(capture, output_dir, output_image)) {
-    return -3;
+  if (mode == "c") {
+    if (!calibration(capture, output_dir, output_image)) {
+      return -3;
+    }
+  } else if (mode == "p") {
+    if (!estimation(capture, output_dir, output_image)) {
+      return -4;
+    }
   }
 
   return 0;

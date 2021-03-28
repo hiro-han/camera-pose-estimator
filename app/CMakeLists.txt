@@ -15,6 +15,7 @@ file(
     GLOB_RECURSE
     SOURCES
     ${PROJECT_DIR}/src/camera_calibrator.cpp
+    ${PROJECT_DIR}/src/camera_pose_estimator.cpp
 )
 
 

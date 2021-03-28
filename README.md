@@ -48,6 +48,11 @@ Example:
 ./CameraPoseEstimator -m c -v ../test/data/checker-video.mp4 -o ../result -oi 1
 ```
 
+```
+./CameraPoseEstimator -m p -v ../test/data/marker.mp4 -o ../result -oi 1
+```
+
+
 
 ### Run maker generator
 Example

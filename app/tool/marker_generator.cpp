@@ -1,8 +1,8 @@
 #include <argparse/argparse.hpp>
 #include <iostream>
 #include <opencv/cv.hpp>
-#include <opencv2/aruco.hpp>          // aruco marker
-#include <opencv2/aruco/charuco.hpp>  // for aruco chess board
+#include <opencv2/aruco.hpp>
+#include <opencv2/aruco/charuco.hpp>
 
 const int ARUCO_SingleMarker = 1;
 const int ARUCO_Board = 2;
