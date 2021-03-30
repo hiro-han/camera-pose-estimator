@@ -1,0 +1,27 @@
+{
+  "marker": {
+    "marker_length": 200
+  },
+  "board": {
+    "row": 5,
+    "col": 7,
+    "marker_length": 0.04,
+    "marker_interval": 0.02,
+    "width": 600,
+    "height": 500,
+    "margin": 10
+  },
+  "chess-board": {
+    "row": 5,
+    "col": 7,
+    "square_length": 0.04,
+    "marker_length": 0.02,
+    "width": 600,
+    "height": 500,
+    "margin": 10
+  },
+  "diamond": {
+    "square_length": 200,
+    "marker_length": 120
+  }
+}
