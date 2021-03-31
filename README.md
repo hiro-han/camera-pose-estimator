@@ -11,10 +11,13 @@ $ git submodule update -i
 
 ## Build docker image
 ```
-$ docker-compose up -d
+$ docker-compose build
 ```
 
+# Run container
 ## Run xserver
+host pc:
+
 ```
 $ xhost local:
 ```
@@ -31,9 +34,20 @@ $ cd app
 $ mkdir build
 $ cd build
 $ cmake ..
+$ make
 ```
 
 ## Run app
+```
+$ cd app/bin
+```
+
+### Run maker generator
+Example
+```
+$ ./marker_generator -i ../marker-gen-config.json -o ../result --type 4
+```
+
 ### Run camera calibrator
 args
 | param | required | description | 
@@ -48,23 +62,15 @@ Example:
 ./CameraPoseEstimator -m c -v ../test/data/checker-video.mp4 -o ../result -oi 1
 ```
 
+### Run pose estimator
+
 ```
 ./CameraPoseEstimator -m p -v ../test/data/marker.mp4 -c ../marker-config.json -o ../result -oi 1
 ```
 
+# config
+## marker-gen-config.json
 
-
-### Run maker generator
-Example
-```
-$ ./marker_generator -i ../marker-gen-config.json -o ../result --type 4
-```
-
-
-
-
-###  config
-marker-gen-config.json
 ```
 {
   "marker": {
@@ -95,7 +101,7 @@ marker-gen-config.json
 }
 ```
 
-marker-config.json
+### marker-config.json
 ```
 {
   "marker": {
